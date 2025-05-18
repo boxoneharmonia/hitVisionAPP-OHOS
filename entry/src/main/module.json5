@@ -1,0 +1,34 @@
+{
+  "module": {
+    "name": "entry",
+    "type": "entry",
+    "description": "$string:module_desc",
+    "mainElement": "ServiceExtAbility",
+    "deviceTypes": [
+      "default",
+      "tablet"
+    ],
+    "deliveryWithInstall": true,
+    "installationFree": false,
+    "pages":"$profile:main_pages",
+    "extensionAbilities": [
+      {
+        "name": "ServiceExtAbility",
+        "icon": "$media:icon",
+        "srcEntry": "./ets/ServiceExtAbility/ServiceExtAbility.ets",
+        "description": "$string:ServiceExtAbility_desc",
+        "label": "$string:ServiceExtAbility_label",
+        "type": "service",
+        "exported": true
+      }
+    ],
+    "requestPermissions": [
+      {
+        "name": "ohos.permission.CONNECTIVITY_INTERNAL",
+      },
+      {
+        "name": "ohos.permission.GET_NETWORK_INFO"
+      }
+    ]
+  }
+}

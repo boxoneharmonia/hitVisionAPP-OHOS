@@ -1,0 +1,27 @@
+{
+  "apiType": "stageMode",
+  "buildOption": {
+    "externalNativeOptions": {
+      "path": "./src/main/cpp/CMakeLists.txt",
+      "arguments": "-v -DOHOS_STL=c++_shared",
+      "cppFlags": "",
+      "abiFilters": [
+        "armeabi-v7a"
+      ]
+    },
+    "sourceOption": {
+      "workers": [
+        //'./src/main/ets/workers/UartReadWorker.ts'
+      ]
+    }
+  },
+  "targets": [
+    {
+      "name": "default",
+      "runtimeOS": "OpenHarmony"
+    },
+    {
+      "name": "ohosTest",
+    }
+  ]
+}
