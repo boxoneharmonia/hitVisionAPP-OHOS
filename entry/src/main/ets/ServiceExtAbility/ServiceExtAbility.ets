@@ -1,7 +1,7 @@
 import ServiceExtensionAbility from '@ohos.app.ability.ServiceExtensionAbility';
 import ethernet from '@ohos.net.ethernet';
 import hilog from '@ohos.hilog';
-import serial from "libserialport.so"  // serial.cpp编译形成的动态链接库.so文件
+import serial from "libserialport.so"
 import SystemCpuUsage from "libSystemCpuUsage.so"
 import burner from "libburner.so"
 
@@ -35,29 +35,13 @@ function trySetIface(iface: string, config: ethernet.InterfaceConfiguration) {
   });
 }
 
-
-
-// function decimalToHexadecimal(decimal: number): string {
-//   let hexadecimal = "";
-//   const hexDigits = "0123456789ABCDEF";
-//   // 通过取余运算进行转换
-//   while (decimal > 0) {
-//     hexadecimal = hexDigits[decimal % 16 ] + hexadecimal;
-//     decimal = Math.floor(decimal / 16);
-//   }
-//   return hexadecimal;
-// }
-
 export default class ServiceExtAbility extends ServiceExtensionAbility
 {
   port: string = "/dev/ttyS0"
   baudrate: number = 9600
-  //sendData: string = "Initialized"
-  message: string = ''
-  result: string = ''
-  isPortOpen: boolean = true;
-  receiveInterval: number = 500;
-  sendInterval: number = 1000;
+  isPortOpen: boolean = true
+  receiveInterval: number = 500
+  sendInterval: number = 1000
   timestampEnabled: boolean = true
   isTimerSend: boolean = false
   uartFd: number = -1;
@@ -82,13 +66,7 @@ export default class ServiceExtAbility extends ServiceExtensionAbility
         this.isPortOpen = true;
       } else {
         hilog.info(0x0000, 'OpenUart', '串口已打开 UART is already open');
-        this.result += "\n" + `串口已打开`;
       }
-
-      // 每50毫秒接收一次数据?暂时不考虑
-      /*this.receiveInterval = setInterval(() => {
-        this.receiveData();
-      }, this.receiveInterval);*/
     } catch (err) {
       console.error('打开串口失败: ', err);
     }
