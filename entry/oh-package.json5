@@ -6,9 +6,7 @@
   "author": "",
   "license": "",
   "dependencies": {
-    "@types/libserialport.so": "file:./src/main/cpp/types/libserialport",
-    "@types/libSystemCpuUsage.so": "file:./src/main/cpp/types/libSystemCpuUsage",
-    "@types/libburner.so": "file:./src/main/cpp/types/libburner"
+    "@types/libserialPort1.so": "file:./src/main/cpp/types/libserialPort1"
   }
 }
 

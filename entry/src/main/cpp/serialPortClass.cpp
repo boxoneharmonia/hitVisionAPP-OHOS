@@ -145,11 +145,11 @@ void SerialPortHandler::loop() {
             callback_(*this, buffer, n);
         } else {
             if (n > 0) {
-                LOGI("Received %d bytes", n);
+                LOGI("Received %{public}d bytes", n);
                 // 示例：自动回复固定的 0xAA 0x55
                 uint8_t reply[] = {0xAA, 0x55};
                 writeData(reply, sizeof(reply));
-                LOGI("Sent %d bytes", sizeof(reply));
+                LOGI("Sent %{public}d bytes", sizeof(reply));
             }
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(INTERVAL));
@@ -159,7 +159,7 @@ void SerialPortHandler::loop() {
 bool SerialPortHandler::configure() {
     const char *portName = portName_.c_str();
     if (fd_ > 0) {
-        LOGW("Serial port %s is already open", portName);
+        LOGW("Serial port %{public}s is already open", portName);
         close(fd_);
         fd_ = -1;
     }
