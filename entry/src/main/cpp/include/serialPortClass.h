@@ -20,16 +20,16 @@ public:
     SerialPortHandler(const std::string &portName, int baudrate);
     ~SerialPortHandler ();
 
-    bool start();
+    void start();
     void stop();
     bool isRunning() const;
     void setReceiveCallback(ReceiveCb callback);
+    int writeData(const uint8_t *data, size_t length);
 
 private:
     void loop();
     bool configure();
     void closePort();
-    int writeData(const uint8_t *data, size_t length);
     int readData(uint8_t *buffer, size_t maxLength);
     
     int fd_;

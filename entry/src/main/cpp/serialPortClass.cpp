@@ -96,24 +96,24 @@ SerialPortHandler::~SerialPortHandler() { stop(); }
 
 // class:public
 
-bool SerialPortHandler::start() {
+void SerialPortHandler::start() {
     if (running_) {
-        LOGW("Thread has started.");
-        return false;
+        LOGW("Thread has started, port %{public}s.", portName_.c_str());
+        return;
     }
     if (!configure()) {
-        LOGW("configure failed.");
-        return false;
+        LOGW("Configure failed, port %{public}s.", portName_.c_str());
+        return;
     }
     running_ = true;
     worker_ = std::thread(&SerialPortHandler::loop, this);
-    LOGI("sp1Thread started.");
-    return true;
+    LOGI("sp1Thread started, port %{public}s.", portName_.c_str());
+    return;
 }
 
 void SerialPortHandler::stop() {
     if (!running_) {
-        LOGW("Thread is not running.");
+        LOGW("Thread is not running, port %{public}s.", portName_.c_str());
         return;
     }
     running_ = false;
@@ -121,12 +121,19 @@ void SerialPortHandler::stop() {
         worker_.join();
     }
     closePort();
-    LOGI("Thread stopped.");
+    LOGI("Thread stopped, port %{public}s.", portName_.c_str());
 }
 
 bool SerialPortHandler::isRunning() const { return running_; }
 
 void SerialPortHandler::setReceiveCallback(ReceiveCb callback) { callback_ = callback; }
+
+int SerialPortHandler::writeData(const uint8_t *data, size_t length) {
+    if (fd_ < 0) {
+        return -1;
+    }
+    return write(fd_, data, length);
+}
 
 //class:private
 
@@ -181,7 +188,7 @@ bool SerialPortHandler::configure() {
     cfg.c_cc[VMIN] = 0;
     cfg.c_cc[VTIME] = 10; // 1000ms 超时
     if ((tcsetattr(fd_, TCSANOW, &cfg)) != 0) {
-        LOGE("Set serial error!");
+        LOGE("Set serial error, port %{public}s.", portName);
         return false;
     } else {
         LOGI("Open serial port %{public}s at %{public}d baud", portName, baudrate_);
@@ -194,13 +201,6 @@ void SerialPortHandler::closePort() {
         close(fd_);
         fd_ = -1;
     }
-}
-
-int SerialPortHandler::writeData(const uint8_t *data, size_t length) {
-    if (fd_ < 0) {
-        return -1;
-    }
-    return write(fd_, data, length);
 }
 
 int SerialPortHandler::readData(uint8_t *buffer, size_t maxLength) {
