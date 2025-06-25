@@ -19,7 +19,6 @@ static void onReceive(SerialPortHandler &handler, const uint8_t *data, size_t le
         uint8_t reply[] = {0xDE, 0xAD};
         handler.writeData(reply, sizeof(reply));
     }
-
 }
 
 void startSp1() {
