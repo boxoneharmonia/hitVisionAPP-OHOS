@@ -35,7 +35,7 @@ private:
     int fd_;
     std::string portName_;
     int baudrate_;
-    std::atomic<bool> running_;
+    std::atomic<bool> running_{false};
     std::thread worker_;
     ReceiveCb callback_;
 };

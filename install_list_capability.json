@@ -251,6 +251,14 @@
             "allowAppUsePrivilegeExtension": true,
             "singleton": true,
             "keepAlive": true
+        },
+        {
+            "bundleName": "com.example.install",
+            "app_signature" : ["6064BBDE772A1F5BE29EBE23D9384808F39641DE939C9762EEEA66D4D2667545"],
+            "allowAppDesktopIconHide": true,
+            "allowAppUsePrivilegeExtension": true,
+            "singleton": true,
+            "keepAlive": true
         }
     ]
 }

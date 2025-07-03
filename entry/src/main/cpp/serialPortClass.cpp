@@ -4,7 +4,7 @@
 // Node APIs are not fully supported. To solve the compilation error of the interface cannot be found,
 // please include "napi/native_api.h".
 
-#include <bits/alltypes.h>
+#include <cstdint>
 #include <vector>
 #include <array>
 #include <atomic>
@@ -15,7 +15,7 @@
 #include "log.h"
 #include "serialPortClass.h"
 
-#define INTERVAL 500
+#define INTERVAL 50
 #define MAX_READ_SIZE 256
 
 using namespace std;
@@ -89,7 +89,7 @@ static speed_t getBaudrate(int baudrate) {
     }
 }
 
-SerialPortHandler::SerialPortHandler(const std::string &portName, int baudrate)
+SerialPortHandler::SerialPortHandler(const string &portName, int baudrate)
     : fd_(-1), portName_(portName), baudrate_(baudrate) {}
 
 SerialPortHandler::~SerialPortHandler() { stop(); }
@@ -106,7 +106,7 @@ void SerialPortHandler::start() {
         return;
     }
     running_ = true;
-    worker_ = std::thread(&SerialPortHandler::loop, this);
+    worker_ = thread(&SerialPortHandler::loop, this);
     LOGI("sp1Thread started, port %{public}s.", portName_.c_str());
     return;
 }
@@ -138,21 +138,12 @@ int SerialPortHandler::writeData(const uint8_t *data, size_t length) {
 //class:private
 
 void SerialPortHandler::loop() {
-    uint8_t buffer[MAX_READ_SIZE];
+    static uint8_t buffer[MAX_READ_SIZE];
+    static size_t n;
     while (running_) {
-        size_t n = readData(buffer, sizeof(buffer));
-        if (callback_) {
-            callback_(*this, buffer, n);
-        } else {
-            if (n > 0) {
-                LOGI("Received %{public}d bytes", n);
-                // 示例：自动回复固定的 0xAA 0x55
-                uint8_t reply[] = {0xAA, 0x55};
-                writeData(reply, sizeof(reply));
-                LOGI("Sent %{public}d bytes", sizeof(reply));
-            }
-        }
-        std::this_thread::sleep_for(std::chrono::milliseconds(INTERVAL));
+        n = readData(buffer, sizeof(buffer));
+        callback_(*this, buffer, n);
+        this_thread::sleep_for(chrono::milliseconds(INTERVAL));
     }
 }
 
@@ -186,7 +177,7 @@ bool SerialPortHandler::configure() {
     cfg.c_oflag &= ~OPOST;                          // 关闭输出处理
 
     cfg.c_cc[VMIN] = 0;
-    cfg.c_cc[VTIME] = 10; // 1000ms 超时
+    cfg.c_cc[VTIME] = 0; // 0ms 超时
     if ((tcsetattr(fd_, TCSANOW, &cfg)) != 0) {
         LOGE("Set serial error, port %{public}s.", portName);
         return false;

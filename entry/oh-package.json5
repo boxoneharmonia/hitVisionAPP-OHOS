@@ -6,7 +6,7 @@
   "author": "",
   "license": "",
   "dependencies": {
-    "@types/libserialPort1.so": "file:./src/main/cpp/types/libserialPort1"
+    "@types/libservice.so": "file:./src/main/cpp/types/libservice"
   }
 }
 

@@ -8,6 +8,7 @@
 #include "napi/native_api.h"
 #include "burner.h"
 #include "log.h"
+#include <bits/alltypes.h>
 
 static BurningCPU burner;
 

@@ -1,22 +1,22 @@
 import ServiceExtensionAbility from '@ohos.app.ability.ServiceExtensionAbility';
 import ethernet from '@ohos.net.ethernet';
 import hilog from '@ohos.hilog';
-import serialPort1 from "libserialPort1.so"
+import service from "libservice.so"
 
 const config0: ethernet.InterfaceConfiguration = {
   mode: ethernet.IPSetMode.STATIC,
-  ipAddr: "192.168.0.233",
-  route: "192.168.0.1",
-  gateway: "192.168.0.1",
+  ipAddr: "192.168.1.211",
+  route: "192.168.1.1",
+  gateway: "192.168.1.1",
   netMask: "255.255.255.0",
   dnsServers: "0.0.0.0"
 };
 
 const config1: ethernet.InterfaceConfiguration = {
   mode: ethernet.IPSetMode.STATIC,
-  ipAddr: "192.168.0.234",
-  route: "192.168.0.1",
-  gateway: "192.168.0.1",
+  ipAddr: "192.168.1.212",
+  route: "192.168.1.1",
+  gateway: "192.168.1.1",
   netMask: "255.255.255.0",
   dnsServers: "0.0.0.0"
 };
@@ -39,7 +39,9 @@ export default class ServiceExtAbility extends ServiceExtensionAbility
     hilog.info(0x0000, 'SetIP', 'ServiceAbility onCreate');
     trySetIface("eth0", config0);
     trySetIface("eth1", config1);
-    serialPort1.startSp1();
+    service.startGetUsage();
+    service.startDDRCheck();
+    service.startSp1();
   }
 
   onRequest() {
@@ -47,6 +49,8 @@ export default class ServiceExtAbility extends ServiceExtensionAbility
   }
 
   onDestroy() {
-    serialPort1.stopSp1();
+    service.stopGetUsage();
+    service.stopDDRCheck();
+    service.stopSp1();
   }
 }

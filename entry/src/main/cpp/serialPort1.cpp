@@ -5,19 +5,62 @@
 // please include "napi/native_api.h".
 
 #include "serialPortClass.h"
+#include "serialPort1.h"
 #include "log.h"
-#include "napi/native_api.h"
+#include "var.h"
+#include <cstdint>
+#include <cstring>
 
-#define baudrate 115200
-#define port "/dev/ttyS0"
+#define BAUDRATE 115200
+#define PORT "/dev/ttyS0"
+#define REPLY_LENGTH 9
+#define BIT(x) (1U << (x))
 
-SerialPortHandler sp1(port, baudrate);
+using namespace std;
+
+SerialPortHandler sp1(PORT, BAUDRATE);
+
+static uint8_t recvCnt = 0;
+static uint8_t sendCnt = 0;
+static uint8_t replyReq = 0x00;
+const uint8_t replyHead[] = {0x1A, 0xCF, 0x01};
 
 static void onReceive(SerialPortHandler &handler, const uint8_t *data, size_t length) {
     if (length > 0) {
         LOGI("Received %{public}d bytes", length);
-        uint8_t reply[] = {0xDE, 0xAD};
-        handler.writeData(reply, sizeof(reply));
+        if (data[0] != 0xEB || data[1] != 0x90) return;
+        if (data[2] == 0x01) {
+            if (length != 3) return;
+            recvCnt += 1;
+            replyReq = 0x01;
+        }
+        else if (data[2] == 0x02) {
+            if (length != 4) return;
+            recvCnt += 1;
+            ledRunning = data[3] & BIT(0);
+            cameraRunning = data[3] & BIT(1);
+            modelRunning = data[3] & BIT(2);
+        }
+    } else {
+//         LOGI("Nothing reveived");
+        if (replyReq == 0x01) {
+            int offset = 0;
+            replyReq = 0x00;
+            sendCnt += 1;
+            uint8_t reply[REPLY_LENGTH];
+            uint8_t tmp[REPLY_LENGTH - 3];
+            tmp[0] = cpuUsageNow;
+            tmp[1] = ddrCheckCnt;
+            tmp[2] = ddrFaultCnt;
+            tmp[3] = ddrResult;
+            tmp[4] = recvCnt;
+            tmp[5] = sendCnt;
+            memcpy(reply + offset, replyHead, sizeof(replyHead));
+            offset += sizeof(replyHead);
+            memcpy(reply + offset, tmp, sizeof(tmp)); 
+            offset += sizeof(tmp);
+            handler.writeData(reply, sizeof(reply));
+        }
     }
 }
 
@@ -29,35 +72,3 @@ void startSp1() {
 void stopSp1() {
     sp1.stop();
 }
-
-static napi_value startSp1Napi(napi_env env, napi_callback_info info) {
-    startSp1();
-    return nullptr;
-}
-
-static napi_value stopSp1Napi(napi_env env, napi_callback_info info) { 
-    stopSp1();
-    return nullptr; 
-}
-
-EXTERN_C_START
-static napi_value Init(napi_env env, napi_value exports) {
-    napi_property_descriptor desc[] = {
-        {"startSp1", nullptr, startSp1Napi, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"stopSp1", nullptr, stopSp1Napi, nullptr, nullptr, nullptr, napi_default, nullptr}};
-    napi_define_properties(env, exports, sizeof(desc) / sizeof(desc[0]), desc);
-    return exports;
-}
-EXTERN_C_END
-
-static napi_module demoModule = {
-    .nm_version = 1,
-    .nm_flags = 0,
-    .nm_filename = nullptr,
-    .nm_register_func = Init,
-    .nm_modname = "serialPort1",
-    .nm_priv = ((void *)0),
-    .reserved = {0},
-};
-
-extern "C" __attribute__((constructor)) void RegisterBurnerModule(void) { napi_module_register(&demoModule); }

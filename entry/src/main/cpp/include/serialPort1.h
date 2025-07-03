@@ -4,10 +4,10 @@
 // Node APIs are not fully supported. To solve the compilation error of the interface cannot be found,
 // please include "napi/native_api.h".
 
-#ifndef MYAPPLICATION_CPUUSAGE_H
-#define MYAPPLICATION_CPUUSAGE_H
+#ifndef MYAPPLICATION_SERIALPORT1_HPP_H
+#define MYAPPLICATION_SERIALPORT1_HPP_H
 
-void startGetUsage();
-void stopGetUsage();
+void startSp1();
+void stopSp1();
 
-#endif //MYAPPLICATION_CPUUSAGE_H
+#endif //MYAPPLICATION_SERIALPORT1_HPP_H
