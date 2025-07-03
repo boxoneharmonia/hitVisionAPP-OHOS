@@ -1,5 +1,5 @@
 {
-  "name": "libserialPort1.so",
+  "name": "libservice.so",
   "types": "./index.d.ts",
   "version": "",
   "description": "Please describe the basic information."
