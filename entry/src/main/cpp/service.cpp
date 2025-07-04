@@ -10,57 +10,35 @@
 #include "cpuUsage.h"
 #include "napi/native_api.h"
 
-static napi_value startSp1Napi(napi_env env, napi_callback_info info) {
-    startSp1();
-    return nullptr;
-}
-
-static napi_value stopSp1Napi(napi_env env, napi_callback_info info) {
-    stopSp1();
-    return nullptr;
-}
-
-static napi_value startGetUsageNapi(napi_env env, napi_callback_info info) {
+void startService() {
     startGetUsage();
-    return nullptr;
-}
-
-static napi_value stopGetUsageNapi(napi_env env, napi_callback_info info) {
-    stopGetUsage();
-    return nullptr;
-}
-
-static napi_value startDDRCheckNapi(napi_env env, napi_callback_info info) {
     startDDRCheck();
-    return nullptr;
-}
-
-static napi_value stopDDRCheckNapi(napi_env env, napi_callback_info info) {
-    stopDDRCheck();
-    return nullptr;
-}
-
-static napi_value startFileCheckNapi(napi_env env, napi_callback_info info) {
     startFileCheck();
+    startSp1();
+}
+
+void stopService() {
+    stopGetUsage();
+    stopDDRCheck();
+    stopFileCheck();
+    stopSp1();
+}
+
+static napi_value startServiceNapi(napi_env env, napi_callback_info info) {
+    startService();
     return nullptr;
 }
 
-static napi_value stopFileCheckNapi(napi_env env, napi_callback_info info) {
-    stopFileCheck();
+static napi_value stopServiceNapi(napi_env env, napi_callback_info info) {
+    stopService();
     return nullptr;
 }
 
 EXTERN_C_START
 static napi_value Init(napi_env env, napi_value exports) {
     napi_property_descriptor desc[] = {
-        {"startSp1", nullptr, startSp1Napi, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"stopSp1", nullptr, stopSp1Napi, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"startGetUsage", nullptr, startGetUsageNapi, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"stopGetUsage", nullptr, stopGetUsageNapi, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"startDDRCheck", nullptr, startDDRCheckNapi, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"stopDDRCheck", nullptr, stopDDRCheckNapi, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"startFileCheck", nullptr, startFileCheckNapi, nullptr, nullptr, nullptr, napi_default, nullptr},
-        {"stopFileCheck", nullptr, stopFileCheckNapi, nullptr, nullptr, nullptr, napi_default, nullptr},
+        {"startService", nullptr, startServiceNapi, nullptr, nullptr, nullptr, napi_default, nullptr},
+        {"stopService", nullptr, stopServiceNapi, nullptr, nullptr, nullptr, napi_default, nullptr},
     };
     napi_define_properties(env, exports, sizeof(desc) / sizeof(desc[0]), desc);
     return exports;

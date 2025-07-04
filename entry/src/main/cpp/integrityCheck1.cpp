@@ -44,9 +44,10 @@ void startDDRCheck() {
 void stopDDRCheck() {
     if (threadRunning) {
         threadRunning = false;
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        std::this_thread::sleep_for(std::chrono::seconds(1));
         if (checkThread.joinable()) checkThread.join();
         ddrchecker.releaseIC();
+        LOGI("DDR Check stopped");
     } else {
         LOGW("DDR Check has stopped");
     }

@@ -59,15 +59,15 @@ static void SysCpuUsage(uint8_t &usage) {
     usage = static_cast<uint8_t>(cpu_percent + 0.5); // 四舍五入
 }
 
+static thread getSysCpuUsageThread;
+static atomic<bool> threadRunning(false);
+
 static void SysCpuUsageLoop() {
-    while (1) {
+    while (threadRunning) {
         SysCpuUsage(cpuUsageNow);
         sleep(1);
     }
 }
-
-static thread getSysCpuUsageThread;
-static atomic<bool> threadRunning(false);
 
 void startGetUsage() {
     if (!threadRunning) {
@@ -81,8 +81,9 @@ void startGetUsage() {
 void stopGetUsage() {
     if (threadRunning) {
         threadRunning = false;
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        std::this_thread::sleep_for(std::chrono::seconds(1));
         if (getSysCpuUsageThread.joinable()) getSysCpuUsageThread.join();
+        LOGI("GetUsage stopped");
     } else {
         LOGW("GetUsage has stopped");
     }

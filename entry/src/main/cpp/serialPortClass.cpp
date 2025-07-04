@@ -117,6 +117,7 @@ void SerialPortHandler::stop() {
         return;
     }
     running_ = false;
+    std::this_thread::sleep_for(std::chrono::seconds(1));
     if (worker_.joinable()) {
         worker_.join();
     }

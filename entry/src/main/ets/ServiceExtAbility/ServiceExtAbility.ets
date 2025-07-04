@@ -39,10 +39,7 @@ export default class ServiceExtAbility extends ServiceExtensionAbility
     hilog.info(0x0000, 'SetIP', 'ServiceAbility onCreate');
     trySetIface("eth0", config0);
     trySetIface("eth1", config1);
-    service.startGetUsage();
-    service.startDDRCheck();
-    service.startFileCheck();
-    service.startSp1();
+    service.startService();
   }
 
   onRequest() {
@@ -50,9 +47,6 @@ export default class ServiceExtAbility extends ServiceExtensionAbility
   }
 
   onDestroy() {
-    service.stopGetUsage();
-    service.stopDDRCheck();
-    service.stopFileCheck();
-    service.stopSp1();
+    service.stopService();
   }
 }
