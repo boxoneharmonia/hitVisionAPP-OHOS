@@ -13,7 +13,7 @@
 
 #define BAUDRATE 115200
 #define PORT "/dev/ttyS0"
-#define REPLY_LENGTH 9
+#define REPLY_LENGTH 15
 #define BIT(x) (1U << (x))
 
 using namespace std;
@@ -49,12 +49,20 @@ static void onReceive(SerialPortHandler &handler, const uint8_t *data, size_t le
             sendCnt += 1;
             uint8_t reply[REPLY_LENGTH];
             uint8_t tmp[REPLY_LENGTH - 3];
+            
             tmp[0] = cpuUsageNow;
-            tmp[1] = ddrCheckCnt;
-            tmp[2] = ddrFaultCnt;
-            tmp[3] = ddrResult;
-            tmp[4] = recvCnt;
-            tmp[5] = sendCnt;
+            tmp[1] = ledRunning == true;
+            tmp[2] = cameraRunning == true;
+            tmp[3] = modelRunning == true;
+            tmp[4] = ddrCheckCnt;
+            tmp[5] = ddrFaultCnt;
+            tmp[6] = ddrResult;
+            tmp[7] = fileCheckCnt;
+            tmp[8] = fileFaultCnt;
+            tmp[9] = fileResult;
+            tmp[10] = recvCnt;
+            tmp[11] = sendCnt;
+            
             memcpy(reply + offset, replyHead, sizeof(replyHead));
             offset += sizeof(replyHead);
             memcpy(reply + offset, tmp, sizeof(tmp)); 

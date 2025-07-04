@@ -31,7 +31,19 @@
       },
       {
         "name": 'ohos.permission.FILE_ACCESS_MANAGER'
-      }
+      },
+      {
+        "name": "ohos.permission.INSTALL_BUNDLE"
+      },
+      {
+        "name": "ohos.permission.UNINSTALL_BUNDLE"
+      },
+      {
+        "name": "ohos.permission.GET_BUNDLE_INFO"
+      },
+      {
+        "name": "ohos.permission.GET_BUNDLE_INFO_PRIVILEGED"
+      },
     ]
   }
 }

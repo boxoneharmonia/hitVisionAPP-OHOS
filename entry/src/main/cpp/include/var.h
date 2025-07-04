@@ -17,5 +17,8 @@ extern uint8_t cpuUsageNow;
 extern uint8_t ddrCheckCnt;
 extern uint8_t ddrFaultCnt;
 extern uint8_t ddrResult;
+extern uint8_t fileCheckCnt;
+extern uint8_t fileFaultCnt;
+extern uint8_t fileResult;
 
 #endif //MYAPPLICATION_VAR_H

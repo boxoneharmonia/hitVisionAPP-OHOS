@@ -6,6 +6,7 @@
 
 #include "serialPort1.h"
 #include "integrityCheck1.h"
+#include "integrityCheck2.h"
 #include "cpuUsage.h"
 #include "napi/native_api.h"
 
@@ -39,6 +40,16 @@ static napi_value stopDDRCheckNapi(napi_env env, napi_callback_info info) {
     return nullptr;
 }
 
+static napi_value startFileCheckNapi(napi_env env, napi_callback_info info) {
+    startFileCheck();
+    return nullptr;
+}
+
+static napi_value stopFileCheckNapi(napi_env env, napi_callback_info info) {
+    stopFileCheck();
+    return nullptr;
+}
+
 EXTERN_C_START
 static napi_value Init(napi_env env, napi_value exports) {
     napi_property_descriptor desc[] = {
@@ -48,6 +59,8 @@ static napi_value Init(napi_env env, napi_value exports) {
         {"stopGetUsage", nullptr, stopGetUsageNapi, nullptr, nullptr, nullptr, napi_default, nullptr},
         {"startDDRCheck", nullptr, startDDRCheckNapi, nullptr, nullptr, nullptr, napi_default, nullptr},
         {"stopDDRCheck", nullptr, stopDDRCheckNapi, nullptr, nullptr, nullptr, napi_default, nullptr},
+        {"startFileCheck", nullptr, startFileCheckNapi, nullptr, nullptr, nullptr, napi_default, nullptr},
+        {"stopFileCheck", nullptr, stopFileCheckNapi, nullptr, nullptr, nullptr, napi_default, nullptr},
     };
     napi_define_properties(env, exports, sizeof(desc) / sizeof(desc[0]), desc);
     return exports;

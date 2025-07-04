@@ -5,6 +5,8 @@ declare namespace service {
   function stopGetUsage();
   function startDDRCheck();
   function stopDDRCheck();
+  function startFileCheck();
+  function stopFileCheck();
 }
 
 export default service

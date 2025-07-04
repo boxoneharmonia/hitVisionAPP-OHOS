@@ -15,3 +15,6 @@ uint8_t cpuUsageNow = 0;
 uint8_t ddrCheckCnt = 0;
 uint8_t ddrFaultCnt = 0;
 uint8_t ddrResult = 0;
+uint8_t fileCheckCnt = 0;
+uint8_t fileFaultCnt = 0;
+uint8_t fileResult = 0;

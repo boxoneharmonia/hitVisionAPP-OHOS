@@ -9,9 +9,9 @@
 #include <cstdint>
 #include <cstdlib>
 #include <cstring>
-#include <cstdio> 
 #include <fstream>
 #include <vector>
+#include <cstdio>
 
 using namespace std;
 
@@ -74,6 +74,8 @@ void IntegrityChecker::releaseIC() {
 
     isAllocated_ = false;
     mode_ = None;
+    checkCnt_ = 0;
+    faultCnt_ = 0;
 }
 
 // private
@@ -90,22 +92,17 @@ void IntegrityChecker::allocateDDR(const size_t length){
 }
 
 void IntegrityChecker::allocateFile(const size_t length, const std::string &path) {
-    vector<uint8_t> buffer(length, 0xA5);
-    ofstream outFile(path, std::ios::binary);
+    ofstream outFile(path, ios::binary & ios::trunc);
     if (!outFile.is_open()) {
         mode_ = None;
         LOGE("Can not write file %{public}s.", path.c_str());
         return;
     }
+    vector<uint8_t> buffer(length, 0xA5);
     outFile.write(reinterpret_cast<const char *>(buffer.data()), buffer.size());
     outFile.flush();
     outFile.close();
-    fileHandle_ = fopen(path.c_str(), "rb");
-    if (!fileHandle_) {
-        mode_ = None;
-        LOGE("Failed to read file %{public}s.", path.c_str());
-        return;
-    }
+    filePath_ = path;
     isAllocated_ = true;
 }
 
@@ -122,7 +119,24 @@ void IntegrityChecker::checkDDR(uint8_t &checkCnt, uint8_t &faultCnt, uint8_t &r
 }
 
 void IntegrityChecker::checkFile(uint8_t &checkCnt, uint8_t &faultCnt, uint8_t &result) {
-    
+    ifstream checkfile(filePath_, ios::binary);
+    if (!checkfile.is_open()) {
+        LOGE("Can not read file %{public}s.", filePath_.c_str());
+        return;
+    }
+    vector<uint8_t> buffer(length_);
+    checkfile.read(reinterpret_cast<char *>(buffer.data()), length_);
+
+    checksumEx_ = checksum_;
+    checksum_ = crc8Check(buffer.data(), length_);
+    result = checksum_;
+    checkCnt_++;
+    if (!firstCheck_ && checksum_ != checksumEx_)
+        faultCnt_++;
+    firstCheck_ = false;
+    checkCnt = checkCnt_;
+    faultCnt = faultCnt_;
+//     LOGI("check succeed : %{public}d %{public}d %{public}d.", checkCnt, faultCnt, result);
 }
 
 void IntegrityChecker::releaseDDR() {
@@ -130,11 +144,13 @@ void IntegrityChecker::releaseDDR() {
         free(ddrBuffer_);
         ddrBuffer_ = nullptr;
     }
-    isAllocated_ = false;
 }
 
 void IntegrityChecker::releaseFile() {
-    
+    if (!filePath_.empty()) {
+        remove(filePath_.c_str());
+        filePath_.clear();
+    }
 }
 
 uint8_t CrcTable[256] = {

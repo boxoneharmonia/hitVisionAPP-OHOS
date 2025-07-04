@@ -41,6 +41,7 @@ export default class ServiceExtAbility extends ServiceExtensionAbility
     trySetIface("eth1", config1);
     service.startGetUsage();
     service.startDDRCheck();
+    service.startFileCheck();
     service.startSp1();
   }
 
@@ -51,6 +52,7 @@ export default class ServiceExtAbility extends ServiceExtensionAbility
   onDestroy() {
     service.stopGetUsage();
     service.stopDDRCheck();
+    service.stopFileCheck();
     service.stopSp1();
   }
 }

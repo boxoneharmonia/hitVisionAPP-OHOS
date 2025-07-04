@@ -27,7 +27,7 @@ private:
 
     bool isAllocated_ = false;
     uint8_t *ddrBuffer_ = nullptr;
-    FILE *fileHandle_ = nullptr;
+    std::string filePath_ = "";
     size_t kiloBytes_ = 0;
     size_t length_ = 0;
 
