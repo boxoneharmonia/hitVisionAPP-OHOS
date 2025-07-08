@@ -18,12 +18,11 @@
 using namespace std;
 
 IntegrityChecker filechecker(1);
-static atomic<bool> threadRunning(false);
 
 static thread checkThread;
 
 static void checkLoop() {
-    while (threadRunning) {
+    while (fileCheckRunning) {
         filechecker.integrityCheck(fileCheckCnt, fileFaultCnt, fileResult);
         std::this_thread::sleep_for(std::chrono::milliseconds(INTERVAL));
     }
@@ -31,24 +30,24 @@ static void checkLoop() {
 
 void startFileCheck() {
 //     LOGI("start File Check");
-    if (!threadRunning) {
-        filechecker.allocateIC(250 * MB, "/data/storage/el1/base/checkfile.bin");
-        threadRunning = true;
+    if (!fileCheckRunning) {
+        filechecker.allocateIC(500 * MB, "/data/storage/el1/base/checkfile.bin");
+        fileCheckRunning = true;
         checkThread = thread(checkLoop);
     } else {
-        LOGW("File Check has started");
+        LOGW("File Check had started");
     }
 }
 
 void stopFileCheck() {
-    if (threadRunning) {
-        threadRunning = false;
+    if (fileCheckRunning) {
+        fileCheckRunning = false;
         std::this_thread::sleep_for(std::chrono::seconds(1));
         if (checkThread.joinable())
             checkThread.join();
         filechecker.releaseIC();
         LOGI("File Check stopped");
     } else {
-        LOGW("File Check has stopped");
+        LOGW("File Check had stopped");
     }
 }

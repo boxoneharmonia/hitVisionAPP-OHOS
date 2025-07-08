@@ -4,6 +4,8 @@
 // Node APIs are not fully supported. To solve the compilation error of the interface cannot be found,
 // please include "napi/native_api.h".
 
+#include "integrityCheck1.h"
+#include "integrityCheck2.h"
 #include "serialPortClass.h"
 #include "serialPort1.h"
 #include "log.h"
@@ -13,12 +15,13 @@
 
 #define BAUDRATE 115200
 #define PORT "/dev/ttyS0"
-#define REPLY_LENGTH 15
+#define INTERVAL 50
+#define REPLY_LENGTH 17
 #define BIT(x) (1U << (x))
 
 using namespace std;
 
-SerialPortHandler sp1(PORT, BAUDRATE);
+SerialPortHandler sp1(PORT, BAUDRATE, INTERVAL);
 
 static uint8_t recvCnt = 0;
 static uint8_t sendCnt = 0;
@@ -27,7 +30,7 @@ const uint8_t replyHead[] = {0x1A, 0xCF, 0x01};
 
 static void onReceive(SerialPortHandler &handler, const uint8_t *data, size_t length) {
     if (length > 0) {
-        LOGI("Received %{public}d bytes", length);
+//         LOGI("Received %{public}d bytes", length);
         if (data[0] != 0xEB || data[1] != 0x90) return;
         if (data[2] == 0x01) {
             if (length != 3) return;
@@ -35,12 +38,35 @@ static void onReceive(SerialPortHandler &handler, const uint8_t *data, size_t le
             replyReq = 0x01;
         }
         else if (data[2] == 0x02) {
-            if (length != 4) return;
+            if (length != 8) return;
             recvCnt += 1;
-            ledRunning = data[3] & BIT(0);
-            cameraRunning = data[3] & BIT(1);
-            modelRunning = data[3] & BIT(2);
+                
+            if (data[3] == 0xAA) 
+                ledRunning = true;
+            else if (data[3] == 0x55) 
+                ledRunning = false;
+                
+            if (data[4] == 0xAA)
+                cameraRunning = true;
+            else if (data[4] == 0x55)
+                cameraRunning = false;
+                
+            if (data[5] == 0xAA)
+                modelRunning = true;
+            else if (data[5] == 0x55)
+                modelRunning = false;
+
+            if (data[6] == 0xAA)
+                startDDRCheck();
+            else if (data[6] == 0x55)
+                stopDDRCheck();
+
+            if (data[7] == 0xAA)
+                startFileCheck();
+            else if (data[7] == 0x55)
+                stopFileCheck();
         }
+        
     } else {
 //         LOGI("Nothing reveived");
         if (replyReq == 0x01) {
@@ -48,20 +74,26 @@ static void onReceive(SerialPortHandler &handler, const uint8_t *data, size_t le
             replyReq = 0x00;
             sendCnt += 1;
             uint8_t reply[REPLY_LENGTH];
-            uint8_t tmp[REPLY_LENGTH - 3];
+            uint8_t tmp[REPLY_LENGTH - 3] = {0};
             
             tmp[0] = cpuUsageNow;
+            
             tmp[1] = ledRunning == true;
             tmp[2] = cameraRunning == true;
             tmp[3] = modelRunning == true;
-            tmp[4] = ddrCheckCnt;
-            tmp[5] = ddrFaultCnt;
-            tmp[6] = ddrResult;
-            tmp[7] = fileCheckCnt;
-            tmp[8] = fileFaultCnt;
-            tmp[9] = fileResult;
-            tmp[10] = recvCnt;
-            tmp[11] = sendCnt;
+            
+            tmp[4] = ddrCheckRunning == true;
+            tmp[5] = ddrCheckCnt;
+            tmp[6] = ddrFaultCnt;
+            tmp[7] = ddrResult;
+            
+            tmp[8] = fileCheckRunning == true;
+            tmp[9] = fileCheckCnt;
+            tmp[10] = fileFaultCnt;
+            tmp[11] = fileResult;
+            
+            tmp[12] = recvCnt;
+            tmp[13] = sendCnt;
             
             memcpy(reply + offset, replyHead, sizeof(replyHead));
             offset += sizeof(replyHead);

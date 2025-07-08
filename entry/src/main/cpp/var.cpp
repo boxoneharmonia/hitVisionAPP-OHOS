@@ -11,6 +11,8 @@ using namespace std;
 atomic<bool> ledRunning(false);
 atomic<bool> cameraRunning(false);
 atomic<bool> modelRunning(false);
+atomic<bool> ddrCheckRunning(false);
+atomic<bool> fileCheckRunning(false);
 uint8_t cpuUsageNow = 0;
 uint8_t ddrCheckCnt = 0;
 uint8_t ddrFaultCnt = 0;

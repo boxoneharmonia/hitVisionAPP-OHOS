@@ -65,7 +65,7 @@ static atomic<bool> threadRunning(false);
 static void SysCpuUsageLoop() {
     while (threadRunning) {
         SysCpuUsage(cpuUsageNow);
-        sleep(1);
+        sleep(2);
     }
 }
 

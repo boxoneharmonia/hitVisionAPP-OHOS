@@ -13,6 +13,8 @@
 extern std::atomic<bool> ledRunning;
 extern std::atomic<bool> cameraRunning;
 extern std::atomic<bool> modelRunning;
+extern std::atomic<bool> ddrCheckRunning;
+extern std::atomic<bool> fileCheckRunning;
 extern uint8_t cpuUsageNow;
 extern uint8_t ddrCheckCnt;
 extern uint8_t ddrFaultCnt;

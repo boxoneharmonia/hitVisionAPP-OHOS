@@ -13,6 +13,9 @@ target_link_libraries(serialPortClass PUBLIC libhilog_ndk.z.so)
 add_library(integrityCheckClass SHARED integrityCheckClass.cpp)
 target_link_libraries(integrityCheckClass PUBLIC libhilog_ndk.z.so)
 
+add_library(TCPServerClass SHARED TCPServerClass.cpp)
+target_link_libraries(TCPServerClass PUBLIC libhilog_ndk.z.so)
+
 add_library(cpuUsage SHARED cpuUsage.cpp var.cpp)
 target_link_libraries(cpuUsage PUBLIC libhilog_ndk.z.so)
 
@@ -22,8 +25,11 @@ target_link_libraries(integrityCheck1 PUBLIC libhilog_ndk.z.so integrityCheckCla
 add_library(integrityCheck2 SHARED integrityCheck2.cpp var.cpp)
 target_link_libraries(integrityCheck2 PUBLIC libhilog_ndk.z.so integrityCheckClass)
 
+add_library(TCPServer1 SHARED TCPServer1.cpp)
+target_link_libraries(TCPServer1 PUBLIC libhilog_ndk.z.so TCPServerClass)
+
 add_library(serialPort1 SHARED serialPort1.cpp var.cpp)
-target_link_libraries(serialPort1 PUBLIC serialPortClass)
+target_link_libraries(serialPort1 PUBLIC libhilog_ndk.z.so serialPortClass integrityCheck1 integrityCheck2)
 
 add_library(service SHARED service.cpp)
-target_link_libraries(service PUBLIC libhilog_ndk.z.so cpuUsage serialPort1 integrityCheck1 integrityCheck2 libace_napi.z.so)
+target_link_libraries(service PUBLIC libhilog_ndk.z.so cpuUsage TCPServer1 integrityCheck1 integrityCheck2 serialPort1 libace_napi.z.so)

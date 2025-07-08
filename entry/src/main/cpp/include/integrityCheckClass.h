@@ -18,6 +18,14 @@ public:
     void releaseIC();
     
 private:
+    void allocateDDR(const size_t length);
+    void allocateFile(const size_t length, const std::string &path);
+    void checkDDR(uint8_t &checkCnt, uint8_t &faultCnt, uint8_t &result);
+    void checkFile(uint8_t &checkCnt, uint8_t &faultCnt, uint8_t &result);
+    void releaseDDR();
+    void releaseFile();
+    uint8_t crc8Check(const uint8_t *data, size_t length); // general IC function
+
     enum checkType {None, DDR, File} mode_;
     uint8_t checkCnt_ = 0;
     uint8_t faultCnt_ = 0;
@@ -30,12 +38,4 @@ private:
     std::string filePath_ = "";
     size_t kiloBytes_ = 0;
     size_t length_ = 0;
-
-    void allocateDDR(const size_t length);
-    void allocateFile(const size_t length, const std::string &path);
-    void checkDDR(uint8_t &checkCnt, uint8_t &faultCnt, uint8_t &result);
-    void checkFile(uint8_t &checkCnt, uint8_t &faultCnt, uint8_t &result);
-    void releaseDDR();
-    void releaseFile();
-    uint8_t crc8Check(const uint8_t *data, size_t length); // general IC function
 };

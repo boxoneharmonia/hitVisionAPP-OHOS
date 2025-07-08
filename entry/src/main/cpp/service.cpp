@@ -4,16 +4,17 @@
 // Node APIs are not fully supported. To solve the compilation error of the interface cannot be found,
 // please include "napi/native_api.h".
 
-#include "serialPort1.h"
+#include "TCPServer1.cpp"
+#include "cpuUsage.h"
 #include "integrityCheck1.h"
 #include "integrityCheck2.h"
-#include "cpuUsage.h"
 #include "napi/native_api.h"
+#include "serialPort1.h"
+#include "TCPServer1.h"
 
 void startService() {
     startGetUsage();
-    startDDRCheck();
-    startFileCheck();
+    startServer1();
     startSp1();
 }
 
@@ -21,6 +22,7 @@ void stopService() {
     stopGetUsage();
     stopDDRCheck();
     stopFileCheck();
+    stopServer1();
     stopSp1();
 }
 

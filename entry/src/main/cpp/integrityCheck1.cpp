@@ -18,12 +18,11 @@
 using namespace std;
 
 IntegrityChecker ddrchecker(1);
-static atomic<bool>threadRunning(false);
 
 static thread checkThread;
 
 static void checkLoop() {
-    while (threadRunning) {
+    while (ddrCheckRunning) {
 //         LOGI("DDR Check Loop");
         ddrchecker.integrityCheck(ddrCheckCnt, ddrFaultCnt, ddrResult);
         std::this_thread::sleep_for(std::chrono::milliseconds(INTERVAL));
@@ -32,24 +31,24 @@ static void checkLoop() {
 
 void startDDRCheck() {
 //     LOGI("start DDR Check");
-    if (!threadRunning) {
-        ddrchecker.allocateIC(250 * MB, "");
-        threadRunning = true;
+    if (!ddrCheckRunning) {
+        ddrchecker.allocateIC(500 * MB, "");
+        ddrCheckRunning = true;
         checkThread = thread(checkLoop);
     } else {
-        LOGW("DDR Check has started");
+        LOGW("DDR Check had started");
     }
 }
 
 void stopDDRCheck() {
-    if (threadRunning) {
-        threadRunning = false;
+    if (ddrCheckRunning) {
+        ddrCheckRunning = false;
         std::this_thread::sleep_for(std::chrono::seconds(1));
         if (checkThread.joinable()) checkThread.join();
         ddrchecker.releaseIC();
         LOGI("DDR Check stopped");
     } else {
-        LOGW("DDR Check has stopped");
+        LOGW("DDR Check had stopped");
     }
 }
 

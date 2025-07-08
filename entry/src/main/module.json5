@@ -24,26 +24,32 @@
     ],
     "requestPermissions": [
       {
-        "name": "ohos.permission.CONNECTIVITY_INTERNAL",
+        "name": "ohos.permission.CONNECTIVITY_INTERNAL"
       },
       {
         "name": "ohos.permission.GET_NETWORK_INFO"
       },
       {
-        "name": 'ohos.permission.FILE_ACCESS_MANAGER'
+        "name": "ohos.permission.SET_NETWORK_INFO"
       },
       {
-        "name": "ohos.permission.INSTALL_BUNDLE"
+        "name": "ohos.permission.INTERNET"
       },
       {
-        "name": "ohos.permission.UNINSTALL_BUNDLE"
+        "name": "ohos.permission.GET_WIFI_INFO_INTERNAL"
+      },
+      {
+        "name": "ohos.permission.FILE_ACCESS_MANAGER"
+      },
+      {
+        "name": "ohos.permission.REQUIRE_FORM"
+      },
+      {
+        "name": "ohos.permission.GET_WIFI_INFO"
       },
       {
         "name": "ohos.permission.GET_BUNDLE_INFO"
-      },
-      {
-        "name": "ohos.permission.GET_BUNDLE_INFO_PRIVILEGED"
-      },
+      }
     ]
   }
 }

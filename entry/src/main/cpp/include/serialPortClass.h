@@ -17,7 +17,7 @@
 class SerialPortHandler  {
 public:
     using ReceiveCb = std::function<void(SerialPortHandler &, const uint8_t *, size_t)>;
-    SerialPortHandler(const std::string &portName, int baudrate);
+    SerialPortHandler(const std::string &portName, int baudrate, int intervalMs);
     ~SerialPortHandler ();
 
     void start();
@@ -35,6 +35,7 @@ private:
     int fd_;
     std::string portName_;
     int baudrate_;
+    int interval_;
     std::atomic<bool> running_{false};
     std::thread worker_;
     ReceiveCb callback_;

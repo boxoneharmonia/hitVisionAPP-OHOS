@@ -15,7 +15,6 @@
 #include "log.h"
 #include "serialPortClass.h"
 
-#define INTERVAL 50
 #define MAX_READ_SIZE 256
 
 using namespace std;
@@ -89,8 +88,8 @@ static speed_t getBaudrate(int baudrate) {
     }
 }
 
-SerialPortHandler::SerialPortHandler(const string &portName, int baudrate)
-    : fd_(-1), portName_(portName), baudrate_(baudrate) {}
+SerialPortHandler::SerialPortHandler(const string &portName, int baudrate, int intervalMs)
+    : fd_(-1), portName_(portName), baudrate_(baudrate), interval_(intervalMs) {}
 
 SerialPortHandler::~SerialPortHandler() { stop(); }
 
@@ -102,12 +101,12 @@ void SerialPortHandler::start() {
         return;
     }
     if (!configure()) {
-        LOGW("Configure failed, port %{public}s.", portName_.c_str());
+        LOGE("Configure failed, port %{public}s.", portName_.c_str());
         return;
     }
     running_ = true;
     worker_ = thread(&SerialPortHandler::loop, this);
-    LOGI("sp1Thread started, port %{public}s.", portName_.c_str());
+    LOGI("Thread started, port %{public}s.", portName_.c_str());
     return;
 }
 
@@ -144,7 +143,7 @@ void SerialPortHandler::loop() {
     while (running_) {
         n = readData(buffer, sizeof(buffer));
         callback_(*this, buffer, n);
-        this_thread::sleep_for(chrono::milliseconds(INTERVAL));
+        this_thread::sleep_for(chrono::milliseconds(interval_));
     }
 }
 
