@@ -10,26 +10,39 @@
 
 #include "TCPServerClass.h"
 #include "log.h"
+#include "var.h"
+#include <sys/time.h>
 #include <unistd.h>
 
 TCPServer server1(IP_1, PORT_1);
 
 static void OnAccept(int cliFd) {
     uint8_t buf[MAX_SIZE_TCP];
+    struct timeval readTimeout;
+    readTimeout.tv_sec = 10;
+    readTimeout.tv_usec = 0;
+    setsockopt(cliFd, SOL_SOCKET, SO_RCVTIMEO, &readTimeout, sizeof(readTimeout));
     while (true) {
         ssize_t n = read(cliFd, buf, MAX_SIZE_TCP);
-        if (n <= 0) {
-            LOGW("Client closed or read error.");
+        if (n < 0) {
+            if (errno == EAGAIN || errno == EWOULDBLOCK) {
+                LOGW("Read timeout, client idle too long.");
+            } else {
+                LOGW("Client read error: %s", strerror(errno));
+            }
+            break;
+        } else if (n == 0) {
+            LOGW("Client closed connection.");
             break;
         }
-        
+
         write(cliFd, buf, n);
         if (n == 2 && buf[0] == 0x55 && buf[1] == 0xAA) {
             LOGI("Closed by client.");
-            return;
+            break;
         }
     }
-
+    
     close(cliFd);
 }
 

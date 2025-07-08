@@ -9,7 +9,10 @@
 #include <arpa/inet.h>
 #include <chrono>
 #include <errno.h>
+#include <fcntl.h>
+#include <sys/select.h>
 #include <sys/socket.h>
+#include <sys/time.h>
 #include <unistd.h>
 
 using namespace std;
@@ -101,21 +104,39 @@ void TCPServer::closeFd() {
 }
 
 void TCPServer::loop() {
+    fd_set rset;
+    struct timeval accTimeout;
+
     while (isRunning_) {
         int cliFd;
         struct sockaddr_in cliAddr;
         socklen_t cliLen = sizeof(cliAddr);
-        cliFd = accept(serFd_, (struct sockaddr *)&cliAddr, &cliLen);
-        if (cliFd < 0) {
-            LOGE("Accept Error: %{public}s", strerror(errno));
+
+        FD_ZERO(&rset);
+        accTimeout.tv_sec = 1;
+        accTimeout.tv_usec = 0;
+        FD_SET(serFd_, &rset);
+        int ret = select(serFd_ + 1, &rset, NULL, NULL, &accTimeout);
+        if (ret < 0) {
+            LOGE("Select error: %{public}s", strerror(errno));
+            continue;
+        } else if (ret == 0) {
+//             LOGW("Accept Timeout, port %{public}u.", port_);
             continue;
         }
-        LOGI("Client Accepted, IP: %{public}s : %{public}u", inet_ntoa(cliAddr.sin_addr), htons(cliAddr.sin_port));
-        if (callback_) {
-            callback_(cliFd);
-        } else {
-            isRunning_ = false;
-            close(cliFd);
+        if (FD_ISSET(serFd_, &rset)) {
+            cliFd = accept(serFd_, (struct sockaddr *)&cliAddr, &cliLen);
+            if (cliFd < 0) {
+                LOGE("Accept Error: %{public}s", strerror(errno));
+                continue;
+            }
+            LOGI("Client Accepted, IP: %{public}s : %{public}u", inet_ntoa(cliAddr.sin_addr), htons(cliAddr.sin_port));
+            if (callback_) {
+                callback_(cliFd);
+            } else {
+                close(cliFd);
+                isRunning_ = false;
+            }
         }
     }
 }
