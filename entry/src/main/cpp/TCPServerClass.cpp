@@ -8,6 +8,7 @@
 #include "log.h"
 #include <arpa/inet.h>
 #include <chrono>
+#include <errno.h>
 #include <sys/socket.h>
 #include <unistd.h>
 
