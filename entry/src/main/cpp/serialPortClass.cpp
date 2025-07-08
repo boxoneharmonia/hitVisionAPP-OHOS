@@ -15,7 +15,7 @@
 #include "log.h"
 #include "serialPortClass.h"
 
-#define MAX_READ_SIZE 256
+#define MAX_SIZE_SERIAL 256
 
 using namespace std;
 
@@ -138,7 +138,7 @@ int SerialPortHandler::writeData(const uint8_t *data, size_t length) {
 //class:private
 
 void SerialPortHandler::loop() {
-    static uint8_t buffer[MAX_READ_SIZE];
+    static uint8_t buffer[MAX_SIZE_SERIAL];
     static size_t n;
     while (running_) {
         n = readData(buffer, sizeof(buffer));

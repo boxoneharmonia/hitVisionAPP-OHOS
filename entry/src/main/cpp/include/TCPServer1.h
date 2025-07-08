@@ -10,5 +10,6 @@
 
 void startServer1();
 void stopServer1();
+bool server1Running();
 
 #endif //MYAPPLICATION_TCPSERVER1_H

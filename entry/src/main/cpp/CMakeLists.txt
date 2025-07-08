@@ -29,7 +29,7 @@ add_library(TCPServer1 SHARED TCPServer1.cpp)
 target_link_libraries(TCPServer1 PUBLIC libhilog_ndk.z.so TCPServerClass)
 
 add_library(serialPort1 SHARED serialPort1.cpp var.cpp)
-target_link_libraries(serialPort1 PUBLIC libhilog_ndk.z.so serialPortClass integrityCheck1 integrityCheck2)
+target_link_libraries(serialPort1 PUBLIC libhilog_ndk.z.so serialPortClass integrityCheck1 integrityCheck2 TCPServer1)
 
 add_library(service SHARED service.cpp)
 target_link_libraries(service PUBLIC libhilog_ndk.z.so cpuUsage TCPServer1 integrityCheck1 integrityCheck2 serialPort1 libace_napi.z.so)

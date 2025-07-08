@@ -15,6 +15,7 @@ extern std::atomic<bool> cameraRunning;
 extern std::atomic<bool> modelRunning;
 extern std::atomic<bool> ddrCheckRunning;
 extern std::atomic<bool> fileCheckRunning;
+extern std::atomic<uint8_t> fileNum;
 extern uint8_t cpuUsageNow;
 extern uint8_t ddrCheckCnt;
 extern uint8_t ddrFaultCnt;

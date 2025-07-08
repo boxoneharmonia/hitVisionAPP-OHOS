@@ -13,6 +13,7 @@ atomic<bool> cameraRunning(false);
 atomic<bool> modelRunning(false);
 atomic<bool> ddrCheckRunning(false);
 atomic<bool> fileCheckRunning(false);
+atomic<uint8_t> fileNum(0x00);
 uint8_t cpuUsageNow = 0;
 uint8_t ddrCheckCnt = 0;
 uint8_t ddrFaultCnt = 0;

@@ -14,7 +14,6 @@
 
 void startService() {
     startGetUsage();
-    startServer1();
     startSp1();
 }
 

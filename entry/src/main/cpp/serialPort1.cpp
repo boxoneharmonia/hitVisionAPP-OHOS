@@ -9,19 +9,20 @@
 #include "serialPortClass.h"
 #include "serialPort1.h"
 #include "log.h"
+#include "TCPServer1.cpp"
 #include "var.h"
 #include <cstdint>
 #include <cstring>
 
-#define BAUDRATE 115200
-#define PORT "/dev/ttyS0"
-#define INTERVAL 50
-#define REPLY_LENGTH 17
+#define BAUDRATE_1 115200
+#define SERIAL_PORT_1 "/dev/ttyS0"
+#define INTERVAL_1 50
+#define REPLY_LENGTH 19
 #define BIT(x) (1U << (x))
 
 using namespace std;
 
-SerialPortHandler sp1(PORT, BAUDRATE, INTERVAL);
+SerialPortHandler sp1(SERIAL_PORT_1, BAUDRATE_1, INTERVAL_1);
 
 static uint8_t recvCnt = 0;
 static uint8_t sendCnt = 0;
@@ -65,8 +66,19 @@ static void onReceive(SerialPortHandler &handler, const uint8_t *data, size_t le
                 startFileCheck();
             else if (data[7] == 0x55)
                 stopFileCheck();
+        } 
+        else if (data[2] == 0x03) {
+            if (length != 5)
+                return;
+            if (data[3] == 0xAA) {
+                startServer1();
+                fileNum = data[4];
+            }
+            else if (data[3] == 0x55) {
+                stopServer1();
+                fileNum = 0;
+            }
         }
-        
     } else {
 //         LOGI("Nothing reveived");
         if (replyReq == 0x01) {
@@ -92,9 +104,12 @@ static void onReceive(SerialPortHandler &handler, const uint8_t *data, size_t le
             tmp[10] = fileFaultCnt;
             tmp[11] = fileResult;
             
-            tmp[12] = recvCnt;
-            tmp[13] = sendCnt;
-            
+            tmp[12] = server1Running();
+            tmp[13] = fileNum;
+
+            tmp[14] = recvCnt;
+            tmp[15] = sendCnt;
+
             memcpy(reply + offset, replyHead, sizeof(replyHead));
             offset += sizeof(replyHead);
             memcpy(reply + offset, tmp, sizeof(tmp)); 

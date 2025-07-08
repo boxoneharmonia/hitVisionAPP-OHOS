@@ -12,7 +12,7 @@
 #include <atomic>
 #include <chrono>
 
-#define INTERVAL 5000
+#define INTERVAL_FILE 5000
 #define MB 1024
 
 using namespace std;
@@ -24,7 +24,7 @@ static thread checkThread;
 static void checkLoop() {
     while (fileCheckRunning) {
         filechecker.integrityCheck(fileCheckCnt, fileFaultCnt, fileResult);
-        std::this_thread::sleep_for(std::chrono::milliseconds(INTERVAL));
+        std::this_thread::sleep_for(std::chrono::milliseconds(INTERVAL_FILE));
     }
 }
 

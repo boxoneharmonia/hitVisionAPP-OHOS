@@ -52,6 +52,8 @@ void TCPServer::stop() {
 
 void TCPServer::setAcceptCallback(AcceptCb callback) { callback_ = callback; }
 
+bool TCPServer::isRunning() const { return isRunning_; }
+
 // private
 
 bool TCPServer::configure() {
@@ -108,7 +110,7 @@ void TCPServer::loop() {
             LOGE("Accept Error: %{public}s", strerror(errno));
             continue;
         }
-        LOGI("Client Accepted");
+        LOGI("Client Accepted, IP: %{public}s : %{public}u", inet_ntoa(cliAddr.sin_addr), htons(cliAddr.sin_port));
         if (callback_) {
             callback_(cliFd);
         } else {
