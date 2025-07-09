@@ -25,7 +25,7 @@ target_link_libraries(integrityCheck1 PUBLIC libhilog_ndk.z.so integrityCheckCla
 add_library(integrityCheck2 SHARED integrityCheck2.cpp var.cpp)
 target_link_libraries(integrityCheck2 PUBLIC libhilog_ndk.z.so integrityCheckClass)
 
-add_library(TCPServer1 SHARED TCPServer1.cpp)
+add_library(TCPServer1 SHARED TCPServer1.cpp var.cpp)
 target_link_libraries(TCPServer1 PUBLIC libhilog_ndk.z.so TCPServerClass)
 
 add_library(serialPort1 SHARED serialPort1.cpp var.cpp)

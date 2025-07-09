@@ -4,53 +4,58 @@
 // Node APIs are not fully supported. To solve the compilation error of the interface cannot be found,
 // please include "napi/native_api.h".
 
-#define PORT_1 3864
-#define MAX_SIZE_TCP 2048
-#define IP_1 "192.168.1.212"
-
 #include "TCPServerClass.h"
 #include "log.h"
 #include "var.h"
+#include <fstream>
+#include <linux/tcp.h>
 #include <sys/time.h>
 #include <unistd.h>
 
+using namespace std;
+
 TCPServer server1(IP_1, PORT_1);
+
+static bool sendSucceed = false;
 
 static void OnAccept(int cliFd) {
     uint8_t buf[MAX_SIZE_TCP];
-    struct timeval readTimeout;
-    readTimeout.tv_sec = 10;
-    readTimeout.tv_usec = 0;
-    setsockopt(cliFd, SOL_SOCKET, SO_RCVTIMEO, &readTimeout, sizeof(readTimeout));
-    while (true) {
-        ssize_t n = read(cliFd, buf, MAX_SIZE_TCP);
-        if (n < 0) {
-            if (errno == EAGAIN || errno == EWOULDBLOCK) {
-                LOGW("Read timeout, client idle too long.");
-            } else {
-                LOGW("Client read error: %s", strerror(errno));
-            }
-            break;
-        } else if (n == 0) {
-            LOGW("Client closed connection.");
-            break;
+    int sndbuf = 2048 * MAX_SIZE_TCP; //
+    setsockopt(cliFd, SOL_SOCKET, SO_SNDBUF, &sndbuf, sizeof(sndbuf));
+    if (fileNum == 0xff) {
+        ifstream file(CHECKFILE, ios::binary);
+        if (!file.is_open()) {
+            LOGE("Failed to open file: %s", CHECKFILE);
+            close(cliFd);
+            return;
         }
+        while (true) {
+            file.read(reinterpret_cast<char *>(buf), MAX_SIZE_TCP);
+            std::streamsize bytesRead = file.gcount();
 
-        write(cliFd, buf, n);
-        if (n == 2 && buf[0] == 0x55 && buf[1] == 0xAA) {
-            LOGI("Closed by client.");
-            break;
+            if (bytesRead <= 0) break;
+            write(cliFd, buf, bytesRead);
+            if (bytesRead < MAX_SIZE_TCP) break;
+            usleep(10);
         }
-    }
-    
+    }  
+    LOGI("Send Succeed.");
+    sendSucceed = true;
     close(cliFd);
 }
 
 void startServer1() {
+    sendSucceed = false;
     server1.setAcceptCallback(OnAccept);
     server1.start();
 }
 
 void stopServer1() { server1.stop(); }
 
-bool server1Running() { return server1.isRunning();}
+int server1Running() { 
+    if (server1.isRunning()) {
+        if (sendSucceed) return 0x02;
+        else return 0x01;
+    }
+    else return 0x00;
+}

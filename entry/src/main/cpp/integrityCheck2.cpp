@@ -12,9 +12,6 @@
 #include <atomic>
 #include <chrono>
 
-#define INTERVAL_FILE 5000
-#define MB 1024
-
 using namespace std;
 
 IntegrityChecker filechecker(1);
@@ -23,7 +20,7 @@ static thread checkThread;
 
 static void checkLoop() {
     while (fileCheckRunning) {
-        filechecker.integrityCheck(fileCheckCnt, fileFaultCnt, fileResult);
+        if (fileNum != 0xff) filechecker.integrityCheck(fileCheckCnt, fileFaultCnt, fileResult);
         std::this_thread::sleep_for(std::chrono::milliseconds(INTERVAL_FILE));
     }
 }
@@ -31,7 +28,7 @@ static void checkLoop() {
 void startFileCheck() {
 //     LOGI("start File Check");
     if (!fileCheckRunning) {
-        filechecker.allocateIC(500 * MB, "/data/storage/el1/base/checkfile.bin");
+        filechecker.allocateIC(fileMB, CHECKFILE);
         fileCheckRunning = true;
         checkThread = thread(checkLoop);
     } else {

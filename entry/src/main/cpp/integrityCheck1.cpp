@@ -12,9 +12,6 @@
 #include <atomic>
 #include <chrono>
 
-#define INTERVAL_DDR 5000
-#define MB 1024
-
 using namespace std;
 
 IntegrityChecker ddrchecker(1);
@@ -32,7 +29,7 @@ static void checkLoop() {
 void startDDRCheck() {
 //     LOGI("start DDR Check");
     if (!ddrCheckRunning) {
-        ddrchecker.allocateIC(500 * MB, "");
+        ddrchecker.allocateIC(ddrMB, "");
         ddrCheckRunning = true;
         checkThread = thread(checkLoop);
     } else {

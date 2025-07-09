@@ -10,6 +10,23 @@
 #include <atomic>
 #include <cstdint>
 
+#define BIT(x) (1U << (x))
+
+#define BAUDRATE_1 115200
+#define SERIAL_PORT_1 "/dev/ttyS0"
+#define INTERVAL_1 50
+#define REPLY_LENGTH 19
+
+#define INTERVAL_DDR 5000
+#define INTERVAL_FILE 5000
+#define ddrMB 500 * 1024
+#define fileMB 50 * 1024
+#define CHECKFILE "/data/storage/el1/base/checkfile.bin"
+
+#define PORT_1 3864
+#define MAX_SIZE_TCP 1024
+#define IP_1 "192.168.1.212"
+
 extern std::atomic<bool> ledRunning;
 extern std::atomic<bool> cameraRunning;
 extern std::atomic<bool> modelRunning;

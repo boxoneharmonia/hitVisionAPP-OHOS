@@ -14,12 +14,6 @@
 #include <cstdint>
 #include <cstring>
 
-#define BAUDRATE_1 115200
-#define SERIAL_PORT_1 "/dev/ttyS0"
-#define INTERVAL_1 50
-#define REPLY_LENGTH 19
-#define BIT(x) (1U << (x))
-
 using namespace std;
 
 SerialPortHandler sp1(SERIAL_PORT_1, BAUDRATE_1, INTERVAL_1);
