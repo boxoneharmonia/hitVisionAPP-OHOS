@@ -9,7 +9,7 @@
 #include "serialPortClass.h"
 #include "serialPort1.h"
 #include "log.h"
-#include "TCPServer1.cpp"
+#include "TCPServer1.h"
 #include "var.h"
 #include <cstdint>
 #include <cstring>
