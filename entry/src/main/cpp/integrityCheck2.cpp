@@ -26,7 +26,7 @@ static void checkLoop() {
 }
 
 void startFileCheck() {
-//     LOGI("start File Check");
+    LOGI("start File Check");
     if (!fileCheckRunning) {
         filechecker.allocateIC(fileMB, CHECKFILE);
         fileCheckRunning = true;

@@ -11,8 +11,15 @@
 #include "napi/native_api.h"
 #include "serialPort1.h"
 #include "TCPServer1.h"
+#include "internet.h"
 
 void startService() {
+    if (set_ip_address("eth0", "192.168.1.211")) {
+        set_interface_up("eth0");
+    }
+    if (set_ip_address("eth1", "192.168.1.212")) {
+        set_interface_up("eth1");
+    }
     startGetUsage();
     startSp1();
 }

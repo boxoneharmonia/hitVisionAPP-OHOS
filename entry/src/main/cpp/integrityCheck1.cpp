@@ -27,7 +27,7 @@ static void checkLoop() {
 }
 
 void startDDRCheck() {
-//     LOGI("start DDR Check");
+    LOGI("start DDR Check");
     if (!ddrCheckRunning) {
         ddrchecker.allocateIC(ddrMB, "");
         ddrCheckRunning = true;

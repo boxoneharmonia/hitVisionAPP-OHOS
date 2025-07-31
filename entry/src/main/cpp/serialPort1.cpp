@@ -13,6 +13,7 @@
 #include "var.h"
 #include <cstdint>
 #include <cstring>
+#include <fstream>
 
 using namespace std;
 
@@ -25,21 +26,31 @@ const uint8_t replyHead[] = {0x1A, 0xCF, 0x01};
 
 static void onReceive(SerialPortHandler &handler, const uint8_t *data, size_t length) {
     if (length > 0) {
-//         LOGI("Received %{public}d bytes", length);
+        LOGI("Received %{public}d bytes", length);
+        for (int i = 0; i < length; i++) {
+            LOGI("Received %{public}x", data[i]);
+        }
         if (data[0] != 0xEB || data[1] != 0x90) return;
         if (data[2] == 0x01) {
             if (length != 3) return;
             recvCnt += 1;
             replyReq = 0x01;
+            LOGI("Received request");
         }
         else if (data[2] == 0x02) {
             if (length != 8) return;
             recvCnt += 1;
                 
-            if (data[3] == 0xAA) 
+            if (data[3] == 0xAA) {
                 ledRunning = true;
-            else if (data[3] == 0x55) 
+                system("echo out > /sys/class/gpio/gpio110/direction");
+                system("echo '1' > /sys/class/gpio/gpio110/value");
+            }
+            else if (data[3] == 0x55) {
                 ledRunning = false;
+                system("echo '0' > /sys/class/gpio/gpio110/value");
+                system("echo in > /sys/class/gpio/gpio110/direction");
+            }
                 
             if (data[4] == 0xAA)
                 cameraRunning = true;
@@ -74,7 +85,6 @@ static void onReceive(SerialPortHandler &handler, const uint8_t *data, size_t le
             }
         }
     } else {
-//         LOGI("Nothing reveived");
         if (replyReq == 0x01) {
             int offset = 0;
             replyReq = 0x00;
@@ -114,6 +124,13 @@ static void onReceive(SerialPortHandler &handler, const uint8_t *data, size_t le
 }
 
 void startSp1() {
+    ofstream export_file;
+    export_file.open("/sys/class/gpio/export");
+    if (!export_file.is_open()){
+        export_file << "110";
+        export_file.close();
+//         LOGI("控制led gpio");
+    }
     sp1.setReceiveCallback(onReceive);
     sp1.start();
 }

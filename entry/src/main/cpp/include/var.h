@@ -25,7 +25,7 @@
 
 #define PORT_1 3864
 #define MAX_SIZE_TCP 1024
-#define IP_1 "192.168.1.212"
+#define IP_1 "192.168.1.211"
 
 extern std::atomic<bool> ledRunning;
 extern std::atomic<bool> cameraRunning;
